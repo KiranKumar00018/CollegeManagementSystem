@@ -87,7 +87,7 @@ is
          insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
          values(sq_error_id.nextval,p_user_id,'sp_update_faculty',v_error_message,v_error_backtrace);
          commit;
-         raise_application_error(-200066,v_error_message||' '||v_error_backtrace);
+         raise_application_error(-20066,v_error_message||' '||v_error_backtrace);
    end sp_update_faculty;
 
    --- add faculty procedure ---
@@ -123,7 +123,7 @@ is
          insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
          values(sq_error_id.nextval,p_user_id,'sp_add_faculty',v_error_message,v_error_backtrace);
          commit;
-         raise_application_error(-200067,v_error_message||' '||v_error_backtrace);
+         raise_application_error(-20067,v_error_message||' '||v_error_backtrace);
    end sp_add_faculty;
 
    --- deactivate faculty procedure ---
@@ -155,7 +155,7 @@ is
          insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
          values(sq_error_id.nextval,p_user_id,'sp_deactivate_faculty',v_error_message,v_error_backtrace);
          commit;
-         raise_application_error(-200068,v_error_message||' '||v_error_backtrace);
+         raise_application_error(-20068,v_error_message||' '||v_error_backtrace);
    end sp_deactivate_faculty;
 
    --- get faculty details function ---
@@ -184,7 +184,7 @@ is
          insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
          values(sq_error_id.nextval,p_user_id,'sf_get_faculty',v_error_message,v_error_backtrace);
          commit;
-         raise_application_error(-200069,v_error_message||' '||v_error_backtrace);
+         raise_application_error(-20069,v_error_message||' '||v_error_backtrace);
    end sf_get_faculty;
 
 end PKG_FACULTYMANAGEMENT;
