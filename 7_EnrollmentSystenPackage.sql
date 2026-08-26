@@ -1,4 +1,4 @@
----======= package specification ========---
+----======= package specification ========----
 
 create or replace package pkg_enrollmentmanagement
 is
