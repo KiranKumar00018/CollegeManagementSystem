@@ -72,10 +72,11 @@ is
          exception
              when others then
                  v_error_message :=sqlerrm;
-                  v_error_backtrace :=dbms_utility.format_error_backtrace;
-                insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line) values(sq_error_id.nextval,p_user_id,'sp_update_student',v_error_message,v_error_backtrace);
-                commit;
-                raise_application_error(-20003,v_error_message||' '||v_error_backtrace);
+                  v_error_backtrace :=substr(dbms_utility.format_error_backtrace,-11);
+                  insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
+        	 values(sq_error_id.nextval,p_user_id,'sp_update_student',v_error_message,v_error_backtrace);
+         commit;
+         	raise_application_error(-200077,v_error_message||' '||v_error_backtrace);
         end sp_update_student; 
         
           --- adding student procedure ---
@@ -98,7 +99,8 @@ is
                  if p_user_id is null then
                raise_application_error(-20001,'you should enter user id');
               else
-                 insert into students( student_id,student_name,date_of_birth,gender,email,phone,department_id,faculty_id,status) values (sq_student_id.nextval,p_student_name,p_date_of_birth,p_gender,p_email,p_phone,p_department_id,p_faculty_id,p_status);
+                 insert into students( student_id,student_name,date_of_birth,gender,email,phone,department_id,faculty_id,status) 
+		values (sq_student_id.nextval,p_student_name,p_date_of_birth,p_gender,p_email,p_phone,p_department_id,p_faculty_id,p_status);
                     commit;
                  DBMS_OUTPUT.PUT_LINE(sql%rowcount||' rows added');
                         DBMS_OUTPUT.PUT_LINE('adding successfully completed');
@@ -110,10 +112,12 @@ is
                 DBMS_OUTPUT.PUT_LINE(sqlerrm);
                 DBMS_OUTPUT.PUT_LINE(dbms_utility.format_error_backtrace);
                 v_error_message :=sqlerrm;
-                   v_error_backtrace:=dbms_utility.format_error_backtrace;
-                insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line) values(sq_error_id.nextval,p_user_id,'sp_add_student',v_error_message,v_error_backtrace);
-                commit;
-                 raise_application_error(-20004,v_error_message||' '||v_error_backtrace);
+                   v_error_backtrace:=substr(dbms_utility.format_error_backtrace,-11);
+ 		 insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
+        	 values(sq_error_id.nextval,p_user_id,' sp_add_student',v_error_message,v_error_backtrace);
+         commit;
+         	raise_application_error(-200077,v_error_message||' '||v_error_backtrace);
+
              end sp_add_student;
              
              --- deactivate student procedure ---
@@ -137,8 +141,9 @@ is
                     exception
                  when others then
                 v_error_message:=sqlerrm;
-                 v_error_backtrace :=dbms_utility.format_error_backtrace;
-                insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line) values(sq_error_id.nextval,p_user_id,'sp_deactivate_student',v_error_message, v_error_backtrace);
+                 v_error_backtrace :=substr(dbms_utility.format_error_backtrace,-11);
+                insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line) 
+		values(sq_error_id.nextval,p_user_id,'sp_deactivate_student',v_error_message, v_error_backtrace);
                commit;
                 raise_application_error(-20005,v_error_message||' '||v_error_backtrace);
          end sp_deactivate_student;
@@ -163,8 +168,8 @@ is
                       raise_application_error(-20002,'Student not found');
                  when others then  
                  v_error_message:=sqlerrm;
-                 v_error_backtrace :=dbms_utility.format_error_backtrace;
-                insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line) values(sq_error_id.nextval,p_user_id,'sf_get_student',v_error_message,v_error_backtrace);
+                 v_error_backtrace :=substr(dbms_utility.format_error_backtrace,-11);
+                insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line) 								           			        values(sq_error_id.nextval,p_user_id,'sf_get_student',v_error_message,v_error_backtrace);
                commit;
                 raise_application_error(-20006,v_error_message||' '||v_error_backtrace);
            end sf_get_student;
