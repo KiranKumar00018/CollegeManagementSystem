@@ -42,8 +42,8 @@ is
                                p_phone students.phone%type,
                                p_department_id students.department_id%type,
                                p_status students.status%type,
+                               p_faculty_id Students.faculty_id%type,
                                p_student_name students.student_name%type,
-                               p_faculty_id Student.faculty_id%type,
                                p_user_id number)
         is  
         v_error_message varchar2(3500);
@@ -58,8 +58,8 @@ is
                                      s.email=nvl(p_email,s.email),
                                      s.phone=nvl(p_phone,s.phone),
                                     s.department_id = nvl(p_department_id, s.department_id),
-                                    s.status=nvl(p_status,s.status)
-                                    s.faculty_id=nvl(p_faculty_id,s.faculty_id);
+                                    s.status=nvl(p_status,s.status),
+                                    s.faculty_id=nvl(p_faculty_id,s.faculty_id)
                 where s.student_id=p_student_id;
                    if sql%rowcount = 0 then
                            raise_application_error(-20002, 'student not found');
@@ -87,8 +87,8 @@ is
                             p_email students.email%type,
                             p_phone students.phone%type,
                             p_department_id students.department_id%type,
-                            p_faculty_id Student.faculty_id%type,
                             p_status students.status%type,
+                            p_faculty_id Students.faculty_id%type,
                             p_user_id number)
              is
               ex exception;
@@ -109,8 +109,6 @@ is
                 when ex then 
                raise_application_error(-20010,'you cannot give null to student_name or gender or status');
              when others then
-                DBMS_OUTPUT.PUT_LINE(sqlerrm);
-                DBMS_OUTPUT.PUT_LINE(dbms_utility.format_error_backtrace);
                 v_error_message :=sqlerrm;
                    v_error_backtrace:=substr(dbms_utility.format_error_backtrace,-11);
  		 insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
@@ -176,4 +174,3 @@ is
              
  end pkg_studentmanagement;
 /
-
