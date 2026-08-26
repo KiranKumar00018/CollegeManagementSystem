@@ -44,11 +44,11 @@ begin
 exception
    when others then
       v_error_message:=sqlerrm;
-      v_error_backtrace:=dbms_utility.format_error_backtrace;
+      v_error_backtrace:=substr(dbms_utility.format_error_backtrace,-11);
       insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
       values(sq_error_id.nextval,p_user_id,'sp_add_course',v_error_message,v_error_backtrace);
       commit;
-      raise_application_error(-200077,v_error_message||' '||v_error_backtrace);
+      raise_application_error(-20109,v_error_message||' '||v_error_backtrace);
 end sp_add_course;
 
 --- updating course procedure ---
@@ -81,11 +81,11 @@ begin
 exception
    when others then
       v_error_message:=sqlerrm;
-      v_error_backtrace:=dbms_utility.format_error_backtrace;
+      v_error_backtrace:=substr(dbms_utility.format_error_backtrace,-11);
       insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
       values(sq_error_id.nextval,p_user_id,'sp_update_course',v_error_message,v_error_backtrace);
       commit;
-      raise_application_error(-200077,v_error_message||' '||v_error_backtrace);
+      raise_application_error(-20110,v_error_message||' '||v_error_backtrace);
 end sp_update_course;
 
 --- deactivating course procedure ---
@@ -112,11 +112,11 @@ begin
 exception
    when others then
       v_error_message:=sqlerrm;
-      v_error_backtrace:=dbms_utility.format_error_backtrace;
+      v_error_backtrace:=substr(dbms_utility.format_error_backtrace,-11);
       insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
       values(sq_error_id.nextval,p_user_id,'sp_deactivate_course',v_error_message,v_error_backtrace);
       commit;
-      raise_application_error(-200077,v_error_message||' '||v_error_backtrace);
+      raise_application_error(-20111,v_error_message||' '||v_error_backtrace);
 end sp_deactivate_course;
 
 --- getting course details with function ---
@@ -146,11 +146,11 @@ exception
       raise_application_error(-20007,v_error_message);
    when others then
       v_error_message:=sqlerrm;
-      v_error_backtrace:=dbms_utility.format_error_backtrace;
+      v_error_backtrace:=substr(dbms_utility.format_error_backtrace,-11);
       insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
       values(sq_error_id.nextval,p_user_id,'sf_get_course',v_error_message,v_error_backtrace);
       commit;
-      raise_application_error(-200077,v_error_message||' '||v_error_backtrace);
+      raise_application_error(-20112,v_error_message||' '||v_error_backtrace);
 end sf_get_course;
 end pkg_coursemanagement;
 /
