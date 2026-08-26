@@ -1,169 +1,166 @@
 
 ---======= package specification ====---
-CREATE OR REPLACE PACKAGE pkg_subjectmanagement
-IS
-   PROCEDURE sp_add_subject(p_subject_name subjects.subject_name%TYPE,
-                            p_course_id subjects.course_id%TYPE,
-                            p_status subjects.status%TYPE,
-                            p_user_id NUMBER);
+create or replace package pkg_subjectmanagement
+is
+   procedure sp_add_subject(p_subject_name subjects.subject_name%type,
+                            p_course_id subjects.course_id%type,
+                            p_status subjects.status%type,
+                            p_user_id number);
 
-   PROCEDURE sp_update_subject(p_subject_id subjects.subject_id%TYPE,
-                               p_subject_name subjects.subject_name%TYPE,
-                               p_course_id subjects.course_id%TYPE,
-                               p_status subjects.status%TYPE,
-                               p_user_id NUMBER);
+   procedure sp_update_subject(p_subject_id subjects.subject_id%type,
+                               p_subject_name subjects.subject_name%type,
+                               p_course_id subjects.course_id%type,
+                               p_status subjects.status%type,
+                               p_user_id number);
 
-   PROCEDURE sp_deactivate_subject(p_subject_id subjects.subject_id%TYPE,
-                                   p_user_id NUMBER);
+   procedure sp_deactivate_subject(p_subject_id subjects.subject_id%type,
+                                   p_user_id number);
 
-   FUNCTION sf_get_subject(p_subject_id subjects.subject_id%TYPE,
-                           p_user_id NUMBER) RETURN subjects%ROWTYPE;
-END pkg_subjectmanagement;
+   function sf_get_subject(p_subject_id subjects.subject_id%type,
+                           p_user_id number) return subjects%rowtype;
+end pkg_subjectmanagement;
 /
 
 ---================================================================================---
 ------===== package body ====------
 
-CREATE OR REPLACE PACKAGE BODY pkg_subjectmanagement
-IS
+create or replace package body pkg_subjectmanagement
+is
    --- adding subject procedure ---
    
-   PROCEDURE sp_add_subject(p_subject_name subjects.subject_name%TYPE,
-                            p_course_id subjects.course_id%TYPE,
-                            p_status subjects.status%TYPE,
-                            p_user_id NUMBER)
-   IS
-      v_error_message VARCHAR2(3500);
-      v_error_backtrace VARCHAR2(3500);
-   BEGIN
-      IF p_user_id IS NULL THEN
-         RAISE_APPLICATION_ERROR(-20001,'you should enter user id');
-      ELSIF p_subject_name IS NULL THEN
-         RAISE_APPLICATION_ERROR(-20002,'you should enter subject name');
-      ELSE
-         INSERT INTO subjects(subject_id,subject_name,course_id,status,created_date)
-         VALUES(sq_subject_id.NEXTVAL,p_subject_name,p_course_id,p_status,SYSDATE);
-         COMMIT;
-         DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT||' rows added');
-         DBMS_OUTPUT.PUT_LINE('adding successfully completed');
-      END IF;
-   EXCEPTION
-      WHEN OTHERS THEN
-         v_error_message:=SQLERRM;
-         v_error_backtrace:=DBMS_UTILITY.FORMAT_ERROR_BACKTRACE;
-         INSERT INTO error_log(error_id,user_id,procedure_name,error_message,error_code_line)
-         VALUES(sq_error_id.NEXTVAL,p_user_id,'sp_add_subject',v_error_message,v_error_backtrace);
-         COMMIT;
-         RAISE_APPLICATION_ERROR(-200077,v_error_message||' '||v_error_backtrace);
-   END sp_add_subject;
+   procedure sp_add_subject(p_subject_name subjects.subject_name%type,
+                            p_course_id subjects.course_id%type,
+                            p_status subjects.status%type,
+                            p_user_id number)
+   is
+      v_error_message varchar2(3500);
+      v_error_backtrace varchar2(3500);
+   begin
+      if p_user_id is null then
+         raise_application_error(-20001,'you should enter user id');
+      elsif p_subject_name is null then
+         raise_application_error(-20002,'you should enter subject name');
+      else
+         insert into subjects(subject_id,subject_name,course_id,status,created_date)
+         values(sq_subject_id.nextval,p_subject_name,p_course_id,p_status,sysdate);
+         commit;
+         dbms_output.put_line(sql%rowcount||' rows added');
+         dbms_output.put_line('adding successfully completed');
+      end if;
+   exception
+      when others then
+         v_error_message:=sqlerrm;
+         v_error_backtrace:=substr(dbms_utility.format_error_backtrace,-11);
+         insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
+         values(sq_error_id.nextval,p_user_id,'sp_add_subject',v_error_message,v_error_backtrace);
+         commit;
+         raise_application_error(-20104,v_error_message||' '||v_error_backtrace);
+   end sp_add_subject;
 
    --- updating subject procedure ---
    
-   PROCEDURE sp_update_subject(p_subject_id subjects.subject_id%TYPE,
-                               p_subject_name subjects.subject_name%TYPE,
-                               p_course_id subjects.course_id%TYPE,
-                               p_status subjects.status%TYPE,
-                               p_user_id NUMBER)
-   IS
-      v_error_message VARCHAR2(3500);
-      v_error_backtrace VARCHAR2(3500);
-   BEGIN
-      IF p_subject_id IS NULL OR p_user_id IS NULL THEN
-         RAISE_APPLICATION_ERROR(-20003,'you should enter subject id as well as user id');
-      ELSE
-         UPDATE subjects s
-         SET s.subject_name=NVL(p_subject_name,s.subject_name),
-             s.course_id=NVL(p_course_id,s.course_id),
-             s.status=NVL(p_status,s.status)
-         WHERE s.subject_id=p_subject_id;
+   procedure sp_update_subject(p_subject_id subjects.subject_id%type,
+                               p_subject_name subjects.subject_name%type,
+                               p_course_id subjects.course_id%type,
+                               p_status subjects.status%type,
+                               p_user_id number)
+   is
+      v_error_message varchar2(3500);
+      v_error_backtrace varchar2(3500);
+   begin
+      if p_subject_id is null or p_user_id is null then
+         raise_application_error(-20003,'you should enter subject id as well as user id');
+      else
+         update subjects s
+         set s.subject_name=nvl(p_subject_name,s.subject_name),
+             s.course_id=nvl(p_course_id,s.course_id),
+             s.status=nvl(p_status,s.status)
+         where s.subject_id=p_subject_id;
 
-         IF SQL%ROWCOUNT=0 THEN
-            RAISE_APPLICATION_ERROR(-20004,'subject not found');
-         ELSE
-            COMMIT;
-            DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT||' rows updated');
-            DBMS_OUTPUT.PUT_LINE('update successfully completed');
-         END IF;
-      END IF;
-   EXCEPTION
-      WHEN OTHERS THEN
-         v_error_message:=SQLERRM;
-         v_error_backtrace:=DBMS_UTILITY.FORMAT_ERROR_BACKTRACE;
-         INSERT INTO error_log(error_id,user_id,procedure_name,error_message,error_code_line)
-         VALUES(sq_error_id.NEXTVAL,p_user_id,'sp_update_subject',v_error_message,v_error_backtrace);
-         COMMIT;
-         RAISE_APPLICATION_ERROR(-200077,v_error_message||' '||v_error_backtrace);
-   END sp_update_subject;
+         if sql%rowcount=0 then
+            raise_application_error(-20004,'subject not found');
+         else
+            commit;
+            dbms_output.put_line(sql%rowcount||' rows updated');
+            dbms_output.put_line('update successfully completed');
+         end if;
+      end if;
+   exception
+      when others then
+         v_error_message:=sqlerrm;
+         v_error_backtrace:=substr(dbms_utility.format_error_backtrace,-11);
+         insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
+         values(sq_error_id.nextval,p_user_id,'sp_update_subject',v_error_message,v_error_backtrace);
+         commit;
+         raise_application_error(-20105,v_error_message||' '||v_error_backtrace);
+   end sp_update_subject;
 
    --- deactivating subject procedure ---
    
-   PROCEDURE sp_deactivate_subject(p_subject_id subjects.subject_id%TYPE,
-                                   p_user_id NUMBER)
-   IS
-      v_error_message VARCHAR2(3500);
-      v_error_backtrace VARCHAR2(3500);
-   BEGIN
-      IF p_subject_id IS NULL OR p_user_id IS NULL THEN
-         RAISE_APPLICATION_ERROR(-20005,'you should enter subject id as well as user id');
-      ELSE
-         UPDATE subjects
-         SET status='INACTIVE'
-         WHERE subject_id=p_subject_id;
+   procedure sp_deactivate_subject(p_subject_id subjects.subject_id%type,
+                                   p_user_id number)
+   is
+      v_error_message varchar2(3500);
+      v_error_backtrace varchar2(3500);
+   begin
+      if p_subject_id is null or p_user_id is null then
+         raise_application_error(-20005,'you should enter subject id as well as user id');
+      else
+         update subjects
+         set status='INACTIVE'
+         where subject_id=p_subject_id;
 
-         IF SQL%ROWCOUNT=0 THEN
-            RAISE_APPLICATION_ERROR(-20004,'subject not found');
-         ELSE
-            COMMIT;
-            DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT||' rows deactivated');
-            DBMS_OUTPUT.PUT_LINE('deactivated successfully completed');
-         END IF;
-      END IF;
-   EXCEPTION
-      WHEN OTHERS THEN
-         v_error_message:=SQLERRM;
-         v_error_backtrace:=DBMS_UTILITY.FORMAT_ERROR_BACKTRACE;
-         INSERT INTO error_log(error_id,user_id,procedure_name,error_message,error_code_line)
-         VALUES(sq_error_id.NEXTVAL,p_user_id,'sp_deactivate_subject',v_error_message,v_error_backtrace);
-         COMMIT;
-         RAISE_APPLICATION_ERROR(-200077,v_error_message||' '||v_error_backtrace);
-   END sp_deactivate_subject;
+         if sql%rowcount=0 then
+            raise_application_error(-20004,'subject not found');
+         else
+            commit;
+            dbms_output.put_line(sql%rowcount||' rows deactivated');
+            dbms_output.put_line('deactivated successfully completed');
+         end if;
+      end if;
+   exception
+      when others then
+         v_error_message:=sqlerrm;
+         v_error_backtrace:=substr(dbms_utility.format_error_backtrace,-11);
+         insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
+         values(sq_error_id.nextval,p_user_id,'sp_deactivate_subject',v_error_message,v_error_backtrace);
+         commit;
+         raise_application_error(-20106,v_error_message||' '||v_error_backtrace);
+   end sp_deactivate_subject;
 
    --- getting subject details with function ---
    
-   FUNCTION sf_get_subject(p_subject_id subjects.subject_id%TYPE,
-                           p_user_id NUMBER) RETURN subjects%ROWTYPE
-   IS
-      v_subject_details subjects%ROWTYPE;
-      v_error_message VARCHAR2(3500);
-      v_error_backtrace VARCHAR2(3500);
-   BEGIN
-      IF p_subject_id IS NULL OR p_user_id IS NULL THEN
-         RAISE_APPLICATION_ERROR(-20006,'you should enter subject id as well as user id');
-      ELSE
-         SELECT *
-         INTO v_subject_details
-         FROM subjects
-         WHERE subject_id=p_subject_id;
-      END IF;
+   function sf_get_subject(p_subject_id subjects.subject_id%type,
+                           p_user_id number) return subjects%rowtype
+   is
+      v_subject_details subjects%rowtype;
+      v_error_message varchar2(3500);
+      v_error_backtrace varchar2(3500);
+   begin
+      if p_subject_id is null or p_user_id is null then
+         raise_application_error(-20004,'you should enter subject id as well as user id');
+      else
+         select *
+         into v_subject_details
+         from subjects
+         where subject_id=p_subject_id;
+      end if;
 
-      RETURN v_subject_details;
+      return v_subject_details;
 
-   EXCEPTION
-      WHEN NO_DATA_FOUND THEN
+   exception
+      when no_data_found then
          v_error_message:='subject not found';
-         v_error_backtrace:=DBMS_UTILITY.FORMAT_ERROR_BACKTRACE;
-         INSERT INTO error_log(error_id,user_id,procedure_name,error_message,error_code_line)
-         VALUES(sq_error_id.NEXTVAL,p_user_id,'sf_get_subject',v_error_message,v_error_backtrace);
-         COMMIT;
-         RAISE_APPLICATION_ERROR(-20007,v_error_message);
-      WHEN OTHERS THEN
-         v_error_message:=SQLERRM;
-         v_error_backtrace:=DBMS_UTILITY.FORMAT_ERROR_BACKTRACE;
-         INSERT INTO error_log(error_id,user_id,procedure_name,error_message,error_code_line)
-         VALUES(sq_error_id.NEXTVAL,p_user_id,'sf_get_subject',v_error_message,v_error_backtrace);
-         COMMIT;
-         RAISE_APPLICATION_ERROR(-200077,v_error_message||' '||v_error_backtrace);
-   END sf_get_subject;
-END pkg_subjectmanagement;
+         v_error_backtrace:=dbms_utility.format_error_backtrace;
+         raise_application_error(-20999,v_error_message);
+      when others then
+         v_error_message:=sqlerrm;
+         v_error_backtrace:=substr(dbms_utility.format_error_backtrace,-11);
+         insert into error_log(error_id,user_id,procedure_name,error_message,error_code_line)
+         values(sq_error_id.nextval,p_user_id,'sf_get_subject',v_error_message,v_error_backtrace);
+         commit;
+         raise_application_error(-20108,v_error_message||' '||v_error_backtrace);
+   end sf_get_subject;
+end pkg_subjectmanagement;
 /
 
